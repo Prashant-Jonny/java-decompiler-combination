@@ -1,0 +1,11 @@
+{
+    "name": "java-decompiler-combination",
+    "version": "0.0.1",
+    "dependencies": {
+        "optimist": "*",
+        "xregexp": "*",
+        "async": "*",
+        "mkdirp": "*",
+        "glob": "*"
+    }
+}
