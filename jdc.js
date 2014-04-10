@@ -1,9 +1,17 @@
 var argv = require('optimist')
-    .usage('Usage: $0 BASE_DIR CLASS_PATH [--lib LIB_DIR] [--path PATH] [--output OUTPUT_FILE]')
+    .usage('Usage: $0 BASE_DIR CLASS_PATH --output OUTPUT_FILE [--lib LIB_DIR] [--path PATH]')
+    .alias('o', 'output')
+    .alias('l', 'lib')
+    .alias('p', 'path')
+    .demand('o')
     .demand(2)
+    .describe('o', 'The output file')
+    .describe('l', '3rd-party libraries directory')
+    .describe('p', 'A list of directories, jars, or zipfiles')
     .argv;
 var fs = require('fs');
 var path = require('path');
+var mkdirp = require('mkdirp');
 
 var util = require('./bin/util.js');
 var decompiler = require('./bin/decompiler.js');
@@ -68,19 +76,14 @@ try {
             console.error(err.stack);
             return;
         }
-
-        if (argv.output) {
-            var mkdirp = require('mkdirp');
-            mkdirp(path.dirname(argv.output), function(err) {
-                if (err) {
-                    console.error(err.stack);
-                    return;
-                }
-                fs.writeFileSync(argv.output, result);
-            });
-        } else {
-            console.log(result);
-        }
+        
+        mkdirp(path.dirname(argv.output), function(err) {
+            if (err) {
+                console.error(err.stack);
+                return;
+            }
+            fs.writeFileSync(argv.output, result);
+        });
     });
 } catch (err) {
     console.error(err.stack);
