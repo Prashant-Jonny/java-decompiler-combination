@@ -95,6 +95,12 @@ var decompiler = {
             fs.readFile(outputSrcFile, function(error, data)
             {
                 if (error) {
+                    var m = /^failed to decompile.*$/m.exec(stdout);
+                    if (m) {
+                        console.log('Krakatau: %s', m[0]);
+                    } else {
+                        console.log(stdout);
+                    }
                     resultBucket.krakatau_decompiled = null;
                     return callback();
                 }
