@@ -64,7 +64,7 @@ try {
         tempDir:    tempDir
     };
 
-    if (argv.path) {
+    if (argv.path && typeof argv.path === 'string') {
         var glob = require('glob');
         options.path = glob.sync(argv.path);
     }
