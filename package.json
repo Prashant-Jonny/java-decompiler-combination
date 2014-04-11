@@ -6,6 +6,9 @@
         "xregexp": "*",
         "async": "*",
         "mkdirp": "*",
-        "glob": "*"
+        "glob": "*",
+        "adm-zip": "*",
+        "walk": "*",
+        "rimraf": "*"
     }
 }
