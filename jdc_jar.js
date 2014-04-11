@@ -1,5 +1,5 @@
 var argv = require('optimist')
-    .usage('Usage: $0 JAR_PATH --output OUTPUT_DIR [--lib LIB_DIR] [--path PATH] [--force]')
+    .usage('Usage: $0 JAR_PATH|CLASS_DIRECTORY --output OUTPUT_DIR [--lib LIB_DIR] [--path PATH] [--force]')
     .alias('o', 'output')
     .alias('l', 'lib')
     .alias('p', 'path')
@@ -34,18 +34,27 @@ try {
     }
 
     // check jar
-    var jarPath = path.resolve(argv._[0]);
-    var jarName = path.basename(jarPath, path.extname(jarPath));
+    var targetPath = path.resolve(argv._[0]);
 
-    if (!util.isExist(jarPath)) {
-        throw new Error('Couldn\'t find jar file: ' + jarPath);
+    if (!util.isExist(targetPath)) {
+        throw new Error('Couldn\'t find jar file or class directory: ' + targetPath);
     }
 
-    if (path.extname(jarPath).toLowerCase() !== '.jar') {
-        throw new Error('Accept jar files only: ' + jarPath);
-    }
+    var targetJar, jarName, outputDir;
 
-    var outputDir = path.resolve(path.join(argv.output, jarName))
+    if (fs.lstatSync(targetPath).isDirectory()) {
+        targetJar = false;
+        outputDir = path.resolve(path.join(argv.output, path.basename(targetPath)));
+    } else {
+        targetJar = true;
+
+        if (path.extname(targetPath).toLowerCase() !== '.jar') {
+            throw new Error('Accept jar files only: ' + targetPath);
+        }
+
+        jarName = path.basename(targetPath, path.extname(targetPath));
+        outputDir = path.resolve(path.join(argv.output, jarName))
+    }
 
     // check output dir
     if (util.isExist(outputDir)) {
@@ -72,18 +81,24 @@ try {
         fs.mkdirSync(tempDir);
     }
 
-    var zip = new admZip(jarPath);
-    var extractDir = path.join(tempDir, jarName);
-    
-    // clean old files
-    if (util.isExist(extractDir)) {
-        console.log('Cleanning...');
-        rmdir.sync(extractDir);
-    }
+    var extractDir;
 
-    // extract jar
-    console.log('Extracting...');
-    zip.extractAllTo(extractDir);
+    if (targetJar) {
+        var zip = new admZip(jarPath);
+        extractDir = path.join(tempDir, jarName);
+
+        // clean old files
+        if (util.isExist(extractDir)) {
+            console.log('Cleanning...');
+            rmdir.sync(extractDir);
+        }
+
+        // extract jar
+        console.log('Extracting...');
+        zip.extractAllTo(extractDir);
+    } else {
+        extractDir = targetPath;
+    }
     
     // walk all files & decompile
     var walker = walk.walk(extractDir);
@@ -122,7 +137,6 @@ try {
             next();
         });
     });
-
 } catch (err) {
     console.error(err.stack);
 }
