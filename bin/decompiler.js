@@ -3,7 +3,9 @@ var analyzer = require('./analyzer.js');
 var async = require('async');
 var path = require('path');
 var fs = require('fs');
+var readline = require('readline');
 var exec = require('child_process').exec;
+var spawn = require('child_process').spawn;
 
 var execOptions = {
     maxBuffer: 5*1024*1024  // 5MiB
@@ -18,7 +20,12 @@ var decompiler = {
         async.series([
             function(callback)
             {
-                decompiler.cfr_decompile(options, r, callback);
+                if (options.cfrFile) {
+                    r.cfr_decompiled = fs.readFileSync(options.cfrFile).toString();
+                    callback();
+                } else {
+                    decompiler.cfr_decompile(options, r, callback);
+                }
             },
             function(callback)
             {
@@ -44,6 +51,23 @@ var decompiler = {
                 callback(err);
             }
         });
+    },
+
+    cfr_decompile_jar: function(options, callback)
+    {
+        var outputBaseDir = path.join(options.tempDir, 'cfr_decompiled');
+        var cfr = spawn('java', ['-jar', options.lib.cfr, options.jarFile, '--outputdir', outputBaseDir]);
+
+        var linereader = readline.createInterface({
+            input:    cfr.stderr,
+            terminal: false
+        });
+
+        cfr.on('close', function (code) {
+            callback(null, outputBaseDir);
+        });
+
+        return linereader;
     },
 
     cfr_decompile: function(options, resultBucket, callback)
