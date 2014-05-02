@@ -13,7 +13,7 @@ Install dependencies:
 ```
 npm install
 cd lib
-wget http://www.benf.org/other/cfr/cfr_0_78.jar -O cfr.jar
+wget http://www.benf.org/other/cfr/cfr_0_79.jar -O cfr.jar
 git clone https://github.com/Storyyeller/Krakatau.git
 ```
 
