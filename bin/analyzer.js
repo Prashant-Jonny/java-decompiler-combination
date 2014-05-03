@@ -9,8 +9,8 @@ var reg_package_name = XRegExp('^\\s*package\\s(?<name>[a-zA-Z0-9_\\.]+);\\s*$',
 var reg_import       = XRegExp('^\\s*import\\s(?<path>[a-zA-Z0-9_\\.]+);\\s*$', 'mng');
 var reg_import_cls   = XRegExp('\\.(?<cls>[a-zA-Z0-9_]+)$');
 var reg_class        = XRegExp('^\\s*(?<decorator>((public|final|abstract)\\s)?(strictfp\\s)?)(?<type>class|interface)\\s(?<name>[a-zA-Z0-9_]+)\\s', 'mng');
-var reg_method       = XRegExp('^\\s*(?<decorator>((public|protected|private|abstract|final|static|native|synchronized|strictfp)\\s)*)((?<ret>[a-zA-Z0-9_\\.]+)\\s)?(?<name>[a-zA-Z0-9_]+)\\s*\\((?<argv>[^\\)]*)\\)', 'mng');
-var reg_method_argv  = XRegExp('(?<type>[a-zA-Z0-9_\\.]+)\\s+(?<name>[a-zA-Z0-9_]+)', 'ng');
+var reg_method       = XRegExp('^\\s*(?<decorator>((public|protected|private|abstract|final|static|native|synchronized|strictfp)\\s)*)((?<ret>[a-zA-Z0-9_\\.\[\]\<\>]+)\\s)?(?<name>[a-zA-Z0-9_]+)\\s*\\((?<argv>[^\\)]*)\\)', 'mng');
+var reg_method_argv  = XRegExp('(?<type>[a-zA-Z0-9_\\.\[\]\<\>]+)\\s+(?<name>[a-zA-Z0-9_]+)', 'ng');
 
 var analyzer = {
     
